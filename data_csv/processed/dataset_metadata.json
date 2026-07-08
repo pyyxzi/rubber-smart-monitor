@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-04-07T16:29:59",
+  "train_ratio": 0.8,
+  "split_strategy": "按唯一日期做时序拆分，避免同一天同时进入训练集和测试集",
+  "split_date": "2023-10-20",
+  "missing_value_strategy": "按站点时间顺序前向填补；若仍缺失，则使用训练集站点中位数；最后使用训练集全局中位数兜底",
+  "label_strategy": "rule_based_proxy_label",
+  "label_note": "当前发病等级标签由气象因子和流行病学规则自动生成，属于风险代理标签。",
+  "label_limitations": [
+    "不是田间实测病情指数或叶片调查值",
+    "更适合用于方法验证和风险分级，不宜直接宣称为真实发病率预测",
+    "后续应使用田间病害调查数据对规则标签进行替换或校正"
+  ],
+  "prediction_defaults": {
+    "temperature_2m_max": 29.5,
+    "temperature_2m_min": 22.6,
+    "temperature_2m_mean": 25.5,
+    "precipitation_sum": 1.0,
+    "rain_sum": 1.0,
+    "precipitation_hours": 5.0,
+    "windspeed_10m_max": 15.8,
+    "windgusts_10m_max": 33.1,
+    "winddirection_10m_dominant": 131.0,
+    "shortwave_radiation_sum": 17.45,
+    "et0_fao_evapotranspiration": 3.6,
+    "dewpoint_2m_min": 20.9,
+    "dewpoint_2m_max": 23.4,
+    "dewpoint_2m_mean": 22.2,
+    "relative_humidity_mean": 81.5,
+    "relative_humidity_max": 100.0,
+    "relative_humidity_min": 59.5,
+    "month": 6.0,
+    "day_of_year": 176.0,
+    "leaf_wetness_hours": 7.0,
+    "temp_range": 7.1,
+    "temp_mean_3d": 25.5,
+    "rh_mean_3d": 81.4,
+    "precip_sum_3d": 4.9,
+    "leaf_wet_3d": 22.0,
+    "temp_mean_5d": 25.5,
+    "rh_mean_5d": 81.3,
+    "precip_sum_5d": 9.9,
+    "leaf_wet_5d": 38.0,
+    "temp_mean_7d": 25.5,
+    "rh_mean_7d": 81.3,
+    "precip_sum_7d": 15.8,
+    "leaf_wet_7d": 54.0,
+    "consecutive_suitable_days": 1.0,
+    "phenology_sensitivity": 0.4
+  },
+  "prediction_form": {
+    "required_inputs": [
+      "obs_date",
+      "temperature_2m_mean",
+      "relative_humidity_mean",
+      "leaf_wetness_hours",
+      "precip_sum_7d",
+      "consecutive_suitable_days"
+    ],
+    "server_side_derived_fields": [
+      "month",
+      "day_of_year",
+      "phenology_sensitivity",
+      "temp_mean_3d/5d/7d",
+      "rh_mean_3d/5d/7d",
+      "precip_sum_3d/5d",
+      "leaf_wet_3d/5d/7d"
+    ]
+  },
+  "station_count": 10,
+  "record_count": 21920,
+  "train_count": 17530,
+  "test_count": 4390,
+  "date_range": {
+    "start": "2019-01-01",
+    "end": "2024-12-31"
+  },
+  "model_feature_count": 35,
+  "stations": [
+    "海南_万宁",
+    "海南_临高",
+    "海南_乐东",
+    "海南_儋州",
+    "海南_定安",
+    "海南_屯昌",
+    "海南_澄迈",
+    "海南_琼中",
+    "海南_琼海",
+    "海南_白沙"
+  ]
+}

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>橡胶树白粉病预警系统</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="brand">橡胶树白粉病<br>预警系统</div>
+  <a class="on" onclick="go('results',this)">训练结果</a>
+  <a onclick="go('figures',this)">图表展示</a>
+  <a onclick="go('predict',this)">数据预测</a>
+  <a onclick="go('imgdet',this)">图片检测</a>
+  <a onclick="go('chat',this)">AI 分析</a>
+</div>
+
+<div id="main">
+
+  <!-- 训练结果 -->
+  <div class="pg on" id="pg-results">
+    <div id="loading" style="color:#999;padding:30px 0">加载中...</div>
+    <div id="wrap" style="display:none">
+      <div class="stat-row" id="stat-cards"></div>
+      <div class="card">
+        <div class="ct">各模型指标汇总</div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr>
+              <th>模型</th><th>准确率</th><th>宏F1</th><th>加权F1</th>
+              <th>宏精确率</th><th>宏召回率</th><th>宏AUC</th><th>耗时</th>
+            </tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="err" style="display:none;color:#c00;padding:10px 0;font-size:13px"></div>
+  </div>
+
+  <!-- 图表展示 -->
+  <div class="pg" id="pg-figures">
+    <div id="fig-tip" style="color:#999;padding:30px 0">加载中...</div>
+    <div id="fig-data-wrap" style="display:none">
+      <div class="fig-sec-title">数据训练图表</div>
+      <div class="fig-grid" id="figs-data"></div>
+    </div>
+    <div id="fig-pic-wrap" style="display:none;margin-top:18px">
+      <div class="fig-sec-title">图像训练图表</div>
+      <div class="fig-grid" id="figs-pic"></div>
+    </div>
+  </div>
+
+  <!-- 数据预测 -->
+  <div class="pg" id="pg-predict">
+    <div class="two-col">
+      <div class="card">
+        <div class="ct">输入气象参数</div>
+        <div class="cb">
+          <p style="font-size:12px;color:#888;margin-bottom:12px">
+            填写 5 项关键观测值和 1 个监测日期，系统自动推导物候敏感度和滚动窗口特征。
+          </p>
+          <div class="form-grid">
+            <div><label>平均气温 (°C)</label>
+              <input id="f0" type="number" value="24.7" step="0.1" min="8" max="35"></div>
+            <div><label>平均相对湿度 (%)</label>
+              <input id="f1" type="number" value="80.3" step="0.1" min="20" max="100"></div>
+            <div><label>叶面湿润时数 (h/天)</label>
+              <input id="f2" type="number" value="8.0" step="0.1" min="0" max="24"></div>
+            <div><label>近7日总降水 (mm)</label>
+              <input id="f3" type="number" value="30.1" step="0.1" min="0" max="500"></div>
+            <div><label>连续适宜天数 (天)</label>
+              <input id="f4" type="number" value="5" step="1" min="0" max="83"></div>
+            <div><label>监测日期</label>
+              <input id="f5" type="date"></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn primary" id="pbtn" onclick="predictData()">开始预测</button>
+            <button class="btn" onclick="resetForm()">重置</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" id="pred-out" style="display:none">
+          <div class="ct">预测结果</div>
+          <div class="cb">
+            <div class="result-label" id="plv"></div>
+            <div class="result-model" id="pinfo"></div>
+            <div id="pbars"></div>
+            <div class="btn-row" style="margin-top:12px">
+              <button class="btn primary" id="aibtn" onclick="aiAnalyze('analyze')">AI 诊断分析</button>
+              <button class="btn primary" id="prevbtn" onclick="aiAnalyze('prevention')">防治措施</button>
+            </div>
+            <div id="ai-out" style="display:none">
+              <div class="ai-result" id="ai-text"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" id="pred-tip">
+          <div class="ct">说明</div>
+          <div class="cb" style="font-size:12px;color:#666;line-height:2">
+            仅需填写关键气象指标和监测日期<br>
+            系统自动推导物候敏感度、时间特征与滚动统计量<br>
+            未直接观测的次级变量使用训练集稳健中位数兜底
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图片检测 -->
+  <div class="pg" id="pg-imgdet">
+    <div class="two-col">
+      <div class="card">
+        <div class="ct">上传叶片图片</div>
+        <div class="cb">
+          <div class="drop-zone" id="dropZone">
+            点击或拖拽上传叶片图片
+            <div class="hint">支持 JPG / PNG / BMP / WEBP</div>
+            <input type="file" id="imgFile" accept="image/*">
+          </div>
+          <div class="img-preview" id="imgPreview"><img id="previewImg"></div>
+          <div class="spinner" id="imgSpinner"></div>
+          <div class="btn-row" id="imgBtnRow" style="display:none">
+            <button class="btn primary" id="imgBtn" onclick="detectImage()">开始检测</button>
+            <button class="btn" onclick="resetImage()">重置</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" id="img-out" style="display:none">
+          <div class="ct">检测结果</div>
+          <div class="cb">
+            <div class="result-tag" id="imgTag"></div>
+            <div class="conf-txt" id="imgConf"></div>
+            <div class="cam-wrap" id="camWrap" style="display:none">
+              <p>Grad-CAM 特征热力图（模型关注区域）</p>
+              <img id="camImg">
+            </div>
+            <div id="imgProbs"></div>
+          </div>
+        </div>
+        <div class="card" id="img-tip">
+          <div class="ct">说明</div>
+          <div class="cb" style="font-size:12px;color:#666;line-height:2">
+            上传橡胶树叶片图片进行健康状态检测<br>
+            模型基于 ResNet-18 图像分类<br>
+            置信度低于 75% 时判定为其他类别<br>
+            Grad-CAM 热力图标注模型关注的图像区域
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI分析 -->
+  <div class="pg" id="pg-chat" style="height:calc(100vh - 40px);flex-direction:column">
+    <div class="card" style="flex:1;display:flex;flex-direction:column;overflow:hidden;margin-bottom:0">
+      <div class="ct">AI分析</div>
+      <div id="chat-msgs"></div>
+      <div class="chat-bar">
+        <input id="chat-input" type="text" placeholder="输入问题，如：白粉病如何防治？" style="flex:1;padding:6px 10px;border:1px solid #ccc;border-radius:3px;font-size:13px" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn primary" id="chat-send" onclick="sendChat()">发送</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="lightbox" onclick="this.classList.remove('on')">
+  <span class="close">&times;</span>
+  <img id="lbimg" src="" alt="">
+</div>
+
+<script src="/static/main.js"></script>
+</body>
+</html>

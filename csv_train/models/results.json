@@ -1,0 +1,230 @@
+{
+  "best_model": "梯度提升",
+  "feature_cols": [
+    "temperature_2m_max",
+    "temperature_2m_min",
+    "temperature_2m_mean",
+    "precipitation_sum",
+    "rain_sum",
+    "precipitation_hours",
+    "windspeed_10m_max",
+    "windgusts_10m_max",
+    "winddirection_10m_dominant",
+    "shortwave_radiation_sum",
+    "et0_fao_evapotranspiration",
+    "dewpoint_2m_min",
+    "dewpoint_2m_max",
+    "dewpoint_2m_mean",
+    "relative_humidity_mean",
+    "relative_humidity_max",
+    "relative_humidity_min",
+    "month",
+    "day_of_year",
+    "leaf_wetness_hours",
+    "temp_range",
+    "temp_mean_3d",
+    "rh_mean_3d",
+    "precip_sum_3d",
+    "leaf_wet_3d",
+    "temp_mean_5d",
+    "rh_mean_5d",
+    "precip_sum_5d",
+    "leaf_wet_5d",
+    "temp_mean_7d",
+    "rh_mean_7d",
+    "precip_sum_7d",
+    "leaf_wet_7d",
+    "consecutive_suitable_days",
+    "phenology_sensitivity"
+  ],
+  "class_names": [
+    "无病(0)",
+    "轻度(1)",
+    "中度(2)",
+    "重度(3)"
+  ],
+  "dataset_meta": {
+    "generated_at": "2026-04-07T16:29:59",
+    "train_ratio": 0.8,
+    "split_strategy": "按唯一日期做时序拆分，避免同一天同时进入训练集和测试集",
+    "split_date": "2023-10-20",
+    "missing_value_strategy": "按站点时间顺序前向填补；若仍缺失，则使用训练集站点中位数；最后使用训练集全局中位数兜底",
+    "label_strategy": "rule_based_proxy_label",
+    "label_note": "当前发病等级标签由气象因子和流行病学规则自动生成，属于风险代理标签。",
+    "label_limitations": [
+      "不是田间实测病情指数或叶片调查值",
+      "更适合用于方法验证和风险分级，不宜直接宣称为真实发病率预测",
+      "后续应使用田间病害调查数据对规则标签进行替换或校正"
+    ],
+    "prediction_defaults": {
+      "temperature_2m_max": 29.5,
+      "temperature_2m_min": 22.6,
+      "temperature_2m_mean": 25.5,
+      "precipitation_sum": 1.0,
+      "rain_sum": 1.0,
+      "precipitation_hours": 5.0,
+      "windspeed_10m_max": 15.8,
+      "windgusts_10m_max": 33.1,
+      "winddirection_10m_dominant": 131.0,
+      "shortwave_radiation_sum": 17.45,
+      "et0_fao_evapotranspiration": 3.6,
+      "dewpoint_2m_min": 20.9,
+      "dewpoint_2m_max": 23.4,
+      "dewpoint_2m_mean": 22.2,
+      "relative_humidity_mean": 81.5,
+      "relative_humidity_max": 100.0,
+      "relative_humidity_min": 59.5,
+      "month": 6.0,
+      "day_of_year": 176.0,
+      "leaf_wetness_hours": 7.0,
+      "temp_range": 7.1,
+      "temp_mean_3d": 25.5,
+      "rh_mean_3d": 81.4,
+      "precip_sum_3d": 4.9,
+      "leaf_wet_3d": 22.0,
+      "temp_mean_5d": 25.5,
+      "rh_mean_5d": 81.3,
+      "precip_sum_5d": 9.9,
+      "leaf_wet_5d": 38.0,
+      "temp_mean_7d": 25.5,
+      "rh_mean_7d": 81.3,
+      "precip_sum_7d": 15.8,
+      "leaf_wet_7d": 54.0,
+      "consecutive_suitable_days": 1.0,
+      "phenology_sensitivity": 0.4
+    },
+    "prediction_form": {
+      "required_inputs": [
+        "obs_date",
+        "temperature_2m_mean",
+        "relative_humidity_mean",
+        "leaf_wetness_hours",
+        "precip_sum_7d",
+        "consecutive_suitable_days"
+      ],
+      "server_side_derived_fields": [
+        "month",
+        "day_of_year",
+        "phenology_sensitivity",
+        "temp_mean_3d/5d/7d",
+        "rh_mean_3d/5d/7d",
+        "precip_sum_3d/5d",
+        "leaf_wet_3d/5d/7d"
+      ]
+    },
+    "station_count": 10,
+    "record_count": 21920,
+    "train_count": 17530,
+    "test_count": 4390,
+    "date_range": {
+      "start": "2019-01-01",
+      "end": "2024-12-31"
+    },
+    "model_feature_count": 35,
+    "stations": [
+      "海南_万宁",
+      "海南_临高",
+      "海南_乐东",
+      "海南_儋州",
+      "海南_定安",
+      "海南_屯昌",
+      "海南_澄迈",
+      "海南_琼中",
+      "海南_琼海",
+      "海南_白沙"
+    ]
+  },
+  "evaluation_note": "当前评估目标为基于流行病学规则生成的风险代理标签，结果更适合用于方法验证和风险分级，不宜直接等同于真实田间发病率预测。",
+  "models": {
+    "逻辑回归": {
+      "accuracy": 0.765375854214123,
+      "f1_macro": 0.7574019133168013,
+      "f1_weighted": 0.7662724611042272,
+      "precision_macro": 0.7394928116285758,
+      "recall_macro": 0.7866127560408278,
+      "f1_per_class": [
+        0.7553191489361702,
+        0.8203072812291249,
+        0.6361674579197237,
+        0.8178137651821862
+      ],
+      "auc_macro": 0.9415108841050039,
+      "time": 1.0233211517333984
+    },
+    "决策树": {
+      "accuracy": 0.8364464692482916,
+      "f1_macro": 0.820196368547294,
+      "f1_weighted": 0.8377039739643638,
+      "precision_macro": 0.813653083268125,
+      "recall_macro": 0.8283493573850768,
+      "f1_per_class": [
+        0.7659574468085106,
+        0.8611575777852124,
+        0.7642140468227425,
+        0.8894564027727107
+      ],
+      "auc_macro": 0.8915321745458105,
+      "time": 0.40926456451416016
+    },
+    "随机森林": {
+      "accuracy": 0.9082004555808656,
+      "f1_macro": 0.9061486023729824,
+      "f1_weighted": 0.9076838031544125,
+      "precision_macro": 0.9097707817716968,
+      "recall_macro": 0.9030114130808824,
+      "f1_per_class": [
+        0.9158576051779935,
+        0.9286856411896386,
+        0.8450331125827815,
+        0.9350180505415162
+      ],
+      "auc_macro": 0.990121105741818,
+      "time": 10.872919797897339
+    },
+    "梯度提升": {
+      "accuracy": 0.9328018223234624,
+      "f1_macro": 0.9272560842428359,
+      "f1_weighted": 0.9326336379395438,
+      "precision_macro": 0.9238537091322199,
+      "recall_macro": 0.9310279543825551,
+      "f1_per_class": [
+        0.9141965678627145,
+        0.9420572916666666,
+        0.894437144108629,
+        0.9583333333333334
+      ],
+      "auc_macro": 0.9939537509320889,
+      "time": 193.71971249580383
+    },
+    "KNN": {
+      "accuracy": 0.8412300683371299,
+      "f1_macro": 0.8346520454190083,
+      "f1_weighted": 0.8387358939667073,
+      "precision_macro": 0.8381289233597193,
+      "recall_macro": 0.833398773521697,
+      "f1_per_class": [
+        0.8461538461538461,
+        0.8729559748427673,
+        0.7258509659613616,
+        0.8936473947180585
+      ],
+      "auc_macro": 0.9633953432663074,
+      "time": 1.4748671054840088
+    },
+    "SVM": {
+      "accuracy": 0.9,
+      "f1_macro": 0.8958715306128066,
+      "f1_weighted": 0.9003363555764075,
+      "precision_macro": 0.8817144541807082,
+      "recall_macro": 0.9142615028163799,
+      "f1_per_class": [
+        0.8914616497829233,
+        0.9196398799599866,
+        0.8456260720411664,
+        0.9267585206671501
+      ],
+      "auc_macro": 0.98908029381543,
+      "time": 44.467954874038696
+    }
+  }
+}
